@@ -4,6 +4,7 @@ import banner from "./utils/banner.js";
 import log from "./utils/logger.js";
 import performTransactions from "./utils/transactions.js";
 import { mintNft, signMessage } from "./contract.js";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
 const reffCode = `bfc7b70e-66ad-4524-9bb6-733716c4da94`;
 const proxyPath = "proxy.txt";
@@ -20,37 +21,25 @@ const headers = {
   "x-plaza-vercel-server": "undefined",
 };
 
-const createAxiosInstance = (proxyUrl) => {
+const createAxiosInstance = (proxyUrl = null) => {
+  const baseURL = "https://api.plaza.finance/";
+
   if (proxyUrl) {
-    const proxyParts = proxyUrl.match(/^http:\/\/([^:]+):([^@]+)@([^:]+):(\d+)$/);
+    const agent = new HttpsProxyAgent(proxyUrl);
 
-    if (proxyParts) {
-      const [, user, password, host, port] = proxyParts;
-
-      return axios.create({
-        baseURL: "https://api.plaza.finance/",
-        headers,
-        proxy: {
-          protocol: "http",
-          host: host,
-          port: parseInt(port, 10),
-          auth: {
-            username: user,
-            password: password,
-          },
-        },
-      });
-    } else {
-      throw new Error("Invalid proxy URL format");
-    }
+    return axios.create({
+      baseURL,
+      headers,
+      httpAgent: agent,
+      httpsAgent: agent,
+    });
   } else {
     return axios.create({
-      baseURL: "https://api.plaza.finance/",
+      baseURL,
       headers,
     });
   }
 };
-
 const getFaucet = async (address, proxyUrl) => {
   const axiosInstance = createAxiosInstance(proxyUrl);
   try {
@@ -147,7 +136,7 @@ const main = async () => {
   while (true) {
     for (const wallet of wallets) {
       const walletKey = wallet.address.toLowerCase();
-      claimedState[walletKey] = claimedState[walletKey] || { nft1: false, nft3: false };
+      claimedState[walletKey] = claimedState[walletKey] || { nft1: false, nft3: false, nft5: false };
       const proxy = proxyList.length > 0 ? proxyList[index % proxyList.length] : null;
       log.warn(`Running Using Proxy: ${proxy || "No Proxy"}`);
       try {
@@ -177,6 +166,15 @@ const main = async () => {
           claimedState,
         });
 
+        await claimNftReward({
+          points,
+          nftType: 5,
+          requiredPoints: 500,
+          wallet,
+          proxy,
+          claimedState,
+        });
+
         if (!claimedState[walletKey].nft1 && !claimedState[walletKey].nft3) {
           log.info(`=== No NFT Rewards For This Address ===`);
         } else {
@@ -192,8 +190,8 @@ const main = async () => {
           await performTransactions(wallet.privateKey, 0);
           await performTransactions(wallet.privateKey, 1);
 
-          log.info("Cooldowns 10 seconds before continuing...\n");
-          await new Promise((resolve) => setTimeout(resolve, 10000));
+          log.info("Cooldowns 5 seconds before continuing next wallet...\n");
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         } else {
           log.info(`=== Not Enough wstETH, Trying to Claim Faucet ===`);
           const faucet = await getFaucet(wallet.address, proxy);
@@ -212,9 +210,9 @@ const main = async () => {
         console.error(err);
       }
     }
-    log.info("Sleeping for 24 hours...");
+    log.info("===Completed all wallets | Sleeping for 24 hours...");
     await new Promise((resolve) => setTimeout(resolve, 24 * 60 * 60 * 1000));
   }
 };
-// lets do it
+// run
 main();

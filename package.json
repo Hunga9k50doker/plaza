@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node main.js",
     "autosend": "node autoSend.js",
-    "create": "node createWallet.js"
+    "create": "node createWallet.js",
+    "faucet": "node faucet.js"
   },
   "author": "@zlkcyber",
   "license": "MIT",

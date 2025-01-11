@@ -1,16 +1,25 @@
 # PLAZA FINANCE BOT
+
 Tool được phát triển bởi nhóm tele Airdrop Hunter Siêu Tốc (<https://t.me/airdrophuntersieutoc>)
+
 Plaza is a platform for on-chain bonds and leverage on Base.
 
 Plaza is a platform for programmable derivatives built as a set of Solidity smart contracts on Base. It offers two core products: bondETH and levETH, which are programmable derivatives of a pool of ETH liquid staking derivatives (LSTs) and liquid restaking derivatives (LRTs) such as wstETH. Users can deposit an underlying pool asset like wstETH and receive levETH or bondETH in return, which are represented as ERC20 tokens. These tokens are composable with protocols such as DEXes, lending markets, restaking platforms, etc.
 
-
 - Website [https://testnet.plaza.finance/](https://testnet.plaza.finance/rewards/Q3SEPYnNMH7K)
 - Twitter [@plaza_finance](https://x.com/plaza_finance)
 
-## Update 
+## Update
 
-- must reinstall dependencies after `git pull` : `npm install` 
+- for now we need to manually claim eth base sepolia testnet
+- claim faucet eth here https://www.alchemy.com/faucets/base-sepolia
+- distribute eth base sepolia to all wallets in wallets.json
+- ```bash
+   npm run faucet
+  ```
+- thats it now you can rerun bot again, `npm run start`
+
+- must reinstall dependencies after `git pull` : `npm install`
 - auto send now being sent from wallet to wallet, not from main wallet to all wallets.
 
 ## Features
@@ -19,8 +28,7 @@ Plaza is a platform for programmable derivatives built as a set of Solidity smar
 - **Auto Get Faucets**
 - **Auto Generate New Wallets**
 - **Send Fund To Existing Address**
-- **All Wallets information Saved In wallets.json** 
-
+- **All Wallets information Saved In wallets.json**
 
 ## Requirements
 
@@ -41,25 +49,26 @@ Plaza is a platform for programmable derivatives built as a set of Solidity smar
    npm install
    ```
 3. Setup: to create new wallets
+
    ```bash
    npm run create
    ```
 
-4. Additional Feature: 
+4. Additional Feature:
 
 - send fund to existing address
 
-    ```bash
-    npm run autosend
-    ```
+  ```bash
+  npm run autosend
+  ```
+
 - use proxy: its optional, paste proxy in the proxy.txt file. 1 proxy per line.
-    ```bash
-    nano proxy.txt
-    ```
-    format : `http://user:password@ip:port`
+  ```bash
+  nano proxy.txt
+  ```
+  format : `http://user:password@ip:port`
 
 5. Run The Script:
    ```bash
    npm run start
    ```
-
